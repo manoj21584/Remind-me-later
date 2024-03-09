@@ -43,6 +43,7 @@ const ReminderForm = () => {
     setMessage("");
     setSelectedDate(moment());
     setSelectedTime(moment());
+    alert("Reminder created successfully!");
   };
 
   return (
