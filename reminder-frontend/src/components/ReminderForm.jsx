@@ -8,21 +8,30 @@ const ReminderForm = () => {
   const [selectedTime, setSelectedTime] = useState(moment()); // store time
   const [reminderMethod, setReminderMethod] = useState("email");
   const [objects, setObjects] = useState([]);
+  const [success, setSuccess] = useState(false); // state to track success status
 
   useEffect(() => {
-    createReminder(objects)
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [objects]);
+    if (success) {
+      // Create reminder after successful creation
+      createReminder(objects)
+        .then((response) => {
+          console.log(response.data);
+          alert("Reminder created successfully!");
+          setSuccess(false); // Reset success status after showing alert
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("Failed to create reminder. Please try again."); // Show alert for failure
+          setSuccess(false); // Reset success status after showing alert
+        });
+    }
+  }, [success, objects]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
     if (!selectedTime.isValid()) {
-      console.error("Invalid time format. Please use HH:mm format.");
+      console.error("Invalid time format. Please use HH:mm format."); // <- This line can be removed
       return;
     }
 
@@ -43,10 +52,16 @@ const ReminderForm = () => {
     setMessage("");
     setSelectedDate(moment());
     setSelectedTime(moment());
+    setSuccess(true); // Set success status to trigger alert
   };
 
   return (
     <form onSubmit={handleSubmit}>
+      {success && (
+        <div className="alert alert-success">
+          Reminder created successfully!
+        </div>
+      )}
       <label htmlFor="message">
         <strong>Message:</strong>
       </label>
@@ -82,7 +97,7 @@ const ReminderForm = () => {
           if (parsedTime.isValid()) {
             setSelectedTime(parsedTime);
           } else {
-            console.error("Invalid time format. Please use HH:mm format.");
+            // console.error("Invalid time format. Please use HH:mm format."); // <- This line can be removed
           }
         }}
         required
